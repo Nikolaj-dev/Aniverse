@@ -22,24 +22,34 @@ class Anime(models.Model):
 
 
 class Genre(models.Model):
-    title = models.CharField(max_length=128)
+    title = models.CharField(max_length=128, unique=True)
 
     def __str__(self):
         return self.title
 
 
 class Studio(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.title
 
 
 class Profile(models.Model):
+    MALE = 'male'
+    FEMALE = 'female'
+    OTHER = 'other'
+
+    SEX_CHOICES = (
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+        (OTHER, 'Other'),
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='profile_images/', default='profile_images/empty.jpg')
     bio = models.TextField()
-    sex = models.CharField(choices=(('male', 'Male'), ('female', 'Female'), ('other', 'Other')))
+    sex = models.CharField(choices=SEX_CHOICES)
     birth_date = models.DateField()
 
     def __str__(self):
@@ -47,8 +57,8 @@ class Profile(models.Model):
 
 
 class Rating(models.Model):
-    for_anime = models.ForeignKey('Anime', on_delete=models.CASCADE)
-    for_user = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    for_anime = models.OneToOneField('Anime', on_delete=models.CASCADE)
+    for_user = models.OneToOneField('Profile', on_delete=models.CASCADE)
     rate = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
 
     def __str__(self):
