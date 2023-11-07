@@ -6,13 +6,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Anime, Genre, Studio, Rating
+from .models import Anime, Genre, Studio, Rating, Profile, Collection
 from . import serializers
 from rest_framework import permissions, status
-from .permissons import IsModerator
+from .permissons import IsModerator, IsRatingOwner, IsCollectionOwner
 import requests
 
-from .serializers import AnimeAverageRatingSerializer, UserRegistrationSerializer
+from .serializers import AnimeAverageRatingSerializer, UserRegistrationSerializer, RatingSerializer, \
+    CollectionSerializer
 
 
 class ShortAnimeListAPIView(ListAPIView):
@@ -159,6 +160,8 @@ class AnimeRatingDistributionView(APIView):
 
 
 class UserRegistrationView(APIView):
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -171,9 +174,70 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class RatingCreateAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            current_user = request.user
+            profile = Profile.objects.filter(user=current_user).first()
+            anime = request.data['for_anime']
+            rating = Rating(for_anime_id=anime, for_user=profile, rate=request.data['rate'])
+            rating.save()
+
+            serializer = RatingSerializer(rating)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except KeyError:
+            return Response("Invalid data format. 'for_anime' and 'rate' are required.", status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+
+class RatingUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRatingOwner]
+
+    def perform_update(self, serializer):
+        profile = Profile.objects.filter(user=self.request.user).first()
+        serializer.save(for_user=profile)
+
+
+class RatingDeleteAPIView(RetrieveDestroyAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRatingOwner]
+
+
+class CollectionListAPIView(ListAPIView):
+    serializer_class = CollectionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = Profile.objects.filter(user=self.request.user).first()
+        return Collection.objects.filter(user=user)
+
+
+class CollectionCreateAPIView(CreateAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CollectionUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
+    permission_classes = [permissions.IsAuthenticated, IsCollectionOwner]
+
+
+class CollectionDeleteAPIView(RetrieveDestroyAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
+    permission_classes = [permissions.IsAuthenticated, IsCollectionOwner]
+
+
 def data_from_drf(request):
     response = requests.get('http://127.0.0.1:8000/catalog_api/full-anime/')
-
     if response.status_code == 200:
         data = response.json()
         context = {'data': data}

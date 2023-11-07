@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Anime, Genre, Studio, Profile
+from .models import Anime, Genre, Studio, Profile, Rating, Collection
 from django.contrib.auth.models import User
 
 
@@ -65,3 +65,35 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Profile.objects.create(**profile_data)
         return user
 
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(RatingSerializer, self).__init__(*args, **kwargs)
+        self.fields['for_user'].required = False
+
+
+class CollectionSerializer(serializers.ModelSerializer):
+    items = serializers.SlugRelatedField(
+        many=True,
+        slug_field='title',
+        queryset=Anime.objects.all()
+    )
+
+    class Meta:
+        model = Collection
+        fields = ('name', 'items')
+
+    def create(self, validated_data):
+        user = Profile.objects.get(user=self.context['request'].user)
+        items_data = validated_data.pop('items', [])
+        collection = Collection.objects.create(user=user, **validated_data)
+
+        for item_title in items_data:
+            item = Anime.objects.get(title=item_title)
+            collection.items.add(item)
+
+        return collection
