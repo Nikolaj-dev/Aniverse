@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Anime, Genre, Studio, Profile, Rating, Collection
+from .models import Anime, Genre, Studio, Profile, Rating, Collection, Comment
 from django.contrib.auth.models import User
 
 
@@ -45,18 +45,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'first_name', 'last_name', 'email', 'image', 'bio', 'sex', 'birth_date')
+        fields = ('username', 'password', 'nickname', 'email', 'image', 'bio', 'sex', 'birth_date')
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
             email=validated_data['email'],
         )
         profile_data = {
             'user': user,
+            'nickname': validated_data.get('nickname'),
             'image': validated_data.get('image'),
             'bio': validated_data.get('bio'),
             'sex': validated_data.get('sex'),
@@ -97,3 +96,17 @@ class CollectionSerializer(serializers.ModelSerializer):
             collection.items.add(item)
 
         return collection
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    anime_reply = serializers.CharField(source='parent.anime.title', read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    user = serializers.CharField(source='user.nickname', read_only=True)
+    reply_to = serializers.CharField(source='parent.user.nickname', read_only=True)
+    anime = serializers.SlugRelatedField(
+        many=False, slug_field='title', read_only=True
+    )
+
+    class Meta:
+        model = Comment
+        fields = ('anime_reply', 'created_at', 'anime', 'text', 'parent', 'user', 'id', 'reply_to')

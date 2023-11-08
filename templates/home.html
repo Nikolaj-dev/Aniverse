@@ -8,19 +8,15 @@
     <h1>Список элементов:</h1>
         {% for item in data %}
             <div>
-                <img src="{{ item.image }}" alt=""><br>
-                <a href="#">{{ item.title }}</a>
-                <p><a href="{% url 'studio-list' %}">{{ item.studio }}</a> - {{ item.year }}</p>
-                <p>{{ item.age_rating }}</p>
-                {% for genre in item.genres %}
-                    <a href="#">{{ genre.title }}</a>
-                    {% endfor %}
-                <p>{{ item.status }}</p>
-                <p>{{ item.length_of_episodes }} min</p>
-                <p>{{ item.ready_episodes }} of {{ item.episodes }} episodes</p>
-                <p>{{ item.type }} type</p>
-                <h1>Description</h1>
-                <p>{{ item.description }}</p>
+                <h1>{{ item.user }}</h1>
+                <div style="display: flex">
+                    {% if item.reply_to %}
+                        <p style="color: aqua">{{ item.reply_to }},</p>
+                    {% endif %}
+                    <p>{{ item.text }}</p>
+                </div>
+                <p>{{ item.created_at }}</p>
+                            <hr>
             </div>
         {% endfor %}
 </body>

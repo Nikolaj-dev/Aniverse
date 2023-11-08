@@ -27,6 +27,7 @@ urlpatterns = [
     path('collection-create/', views.CollectionCreateAPIView.as_view()),
     path('collection-update/<int:pk>/', views.CollectionUpdateAPIView.as_view()),
     path('collection-delete/<int:pk>/', views.CollectionDeleteAPIView.as_view()),
+    path('comments/', views.CommentsListAPIView.as_view()),
     path('data-from-drf/', views.data_from_drf, name='data_from_drf'),
     path('register/', views.UserRegistrationView.as_view(), name='user-registration'),
 ]

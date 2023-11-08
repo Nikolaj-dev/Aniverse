@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Anime, Genre, Studio, Profile, Rating, Collection
+from .models import Anime, Genre, Studio, Profile, Rating, Collection, Comment
 
 
 @admin.register(Genre)
@@ -43,3 +43,10 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'user')
     list_filter = ('user',)
     search_fields = ('name', 'user__user__username', 'user__user__first_name', 'user__user__last_name')
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'anime', 'created_at')
+    list_filter = ('anime',)
+

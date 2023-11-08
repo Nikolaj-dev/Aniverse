@@ -6,14 +6,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Anime, Genre, Studio, Rating, Profile, Collection
+from .models import Anime, Genre, Studio, Rating, Profile, Collection, Comment
 from . import serializers
 from rest_framework import permissions, status
 from .permissons import IsModerator, IsRatingOwner, IsCollectionOwner
 import requests
 
 from .serializers import AnimeAverageRatingSerializer, UserRegistrationSerializer, RatingSerializer, \
-    CollectionSerializer
+    CollectionSerializer, CommentSerializer
 
 
 class ShortAnimeListAPIView(ListAPIView):
@@ -236,8 +236,21 @@ class CollectionDeleteAPIView(RetrieveDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsCollectionOwner]
 
 
+class CommentsListAPIView(ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        queryset = Comment.objects.all()
+        anime = self.request.query_params.get('anime')
+
+        if anime:
+            queryset = queryset.filter(anime__title=anime)
+
+        return queryset
+
+
 def data_from_drf(request):
-    response = requests.get('http://127.0.0.1:8000/catalog_api/full-anime/')
+    response = requests.get('http://127.0.0.1:8000/catalog_api/comments/?anime=Kusuriya%20no%20Hitorigoto')
     if response.status_code == 200:
         data = response.json()
         context = {'data': data}

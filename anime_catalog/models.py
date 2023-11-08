@@ -46,6 +46,7 @@ class Profile(models.Model):
         (OTHER, 'Other'),
     )
 
+    nickname = models.CharField(max_length=64)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='profile_images/', default='profile_images/empty.jpg')
     bio = models.TextField()
@@ -72,3 +73,14 @@ class Collection(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Comment(models.Model):
+    user = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    anime = models.ForeignKey('Anime', on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+
+    def __str__(self):
+        return f"{self.user.user.username} - {self.anime.title} - {self.created_at}"
