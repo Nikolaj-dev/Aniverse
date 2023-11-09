@@ -32,6 +32,11 @@ urlpatterns = [
     path('comment-create/', views.CommentCreateAPIView.as_view()),
     path('comment-update/<int:pk>/', views.CommentUpdateAPIView.as_view()),
     path('comment-delete/<int:pk>/', views.CommentDeleteAPIView.as_view()),
+    path('review-list/', views.ReviewListAPIView.as_view()),
+    path('review-retrieve/<int:pk>/', views.ReviewRetrieveAPIView.as_view()),
+    path('review-create/', views.ReviewCreateAPIView.as_view()),
+    path('review-update/<int:pk>/', views.ReviewUpdateAPIView.as_view()),
+    path('review-delete/<int:pk>/', views.ReviewDeleteAPIView.as_view()),
     path('data-from-drf/', views.data_from_drf, name='data_from_drf'),
     path('register/', views.UserRegistrationView.as_view(), name='user-registration'),
 ]

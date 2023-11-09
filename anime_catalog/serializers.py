@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from .models import Anime, Genre, Studio, Profile, Rating, Collection, Comment
+from .models import Anime, Genre, Studio, Profile, Rating, Collection, Comment, Review
 from django.contrib.auth.models import User
-import datetime
 
 
 class ShortAnimeSerializer(serializers.ModelSerializer):
@@ -67,13 +66,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
+    for_anime = serializers.SlugRelatedField(queryset=Anime.objects.all(), slug_field='title')
+
     class Meta:
         model = Rating
-        fields = '__all__'
+        fields = ('for_anime', 'rate')
 
-    def __init__(self, *args, **kwargs):
-        super(RatingSerializer, self).__init__(*args, **kwargs)
-        self.fields['for_user'].required = False
+    def create(self, validated_data):
+        user = Profile.objects.get(user=self.context['request'].user)
+        rating = Rating.objects.create(for_user=user, **validated_data)
+        return rating
+
 
 
 class CollectionSerializer(serializers.ModelSerializer):
@@ -101,7 +104,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 class CommentReadOnlySerializer(serializers.ModelSerializer):
     anime_reply = serializers.CharField(source='parent.anime.title', read_only=True)
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.DateTimeField(format="%d %B %Y %H:%M:%S")
     user = serializers.CharField(source='user.nickname', read_only=True)
     reply_to = serializers.CharField(source='parent.user.nickname', read_only=True)
     anime = serializers.SlugRelatedField(
@@ -127,3 +130,29 @@ class CommentSerializer(serializers.ModelSerializer):
         }
         comment = Comment.objects.create(**comment_data)
         return comment
+
+
+class ReviewReadOnlySerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.nickname', read_only=True)
+    anime = serializers.SlugRelatedField(
+        many=False, slug_field='title', read_only=True
+    )
+    date = serializers.DateField(format="%d %B %Y")
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    anime = serializers.SlugRelatedField(queryset=Anime.objects.all(), slug_field='title')
+    user = serializers.CharField(source='user.nickname', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ('anime', 'storyline', 'characters', 'artwork', 'sound_series', 'final_grade', 'text', 'user')
+
+    def create(self, validated_data):
+        user = Profile.objects.get(user=self.context['request'].user)
+        review = Review.objects.create(user=user, **validated_data)
+        return review

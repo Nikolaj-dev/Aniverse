@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, MaxLengthValidator
+from datetime import datetime
+
+
+current_year = datetime.now().year
 
 
 class Anime(models.Model):
     image = models.ImageField(upload_to='anime_images/', default='anime_images/empty.png', blank=True, null=False)
-    title = models.CharField(max_length=516)
-    description = models.TextField()
+    title = models.CharField(max_length=516, unique=True)
+    description = models.TextField(validators=[MinLengthValidator(100), MaxLengthValidator(5000)])
     type = models.CharField(max_length=64)
     episodes = models.PositiveSmallIntegerField()
     ready_episodes = models.PositiveSmallIntegerField()
@@ -15,7 +19,7 @@ class Anime(models.Model):
     genres = models.ManyToManyField('Genre')
     age_rating = models.CharField(max_length=36)
     studio = models.ForeignKey('Studio', on_delete=models.CASCADE)
-    year = models.PositiveSmallIntegerField()
+    year = models.PositiveSmallIntegerField(validators=[MinValueValidator(1900), MaxValueValidator(current_year)])
 
     def __str__(self):
         return self.title
@@ -46,15 +50,15 @@ class Profile(models.Model):
         (OTHER, 'Other'),
     )
 
-    nickname = models.CharField(max_length=64)
+    nickname = models.CharField(max_length=64, unique=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='profile_images/', default='profile_images/empty.jpg')
-    bio = models.TextField()
+    image = models.ImageField(upload_to='profile_images/', default='profile_images/empty.jpg', blank=True, null=False)
+    bio = models.TextField(validators=[MaxLengthValidator(250)], blank=True, null=True)
     sex = models.CharField(choices=SEX_CHOICES)
     birth_date = models.DateField()
 
     def __str__(self):
-        return self.user.first_name
+        return self.nickname
 
 
 class Rating(models.Model):
@@ -78,9 +82,27 @@ class Collection(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey('Profile', on_delete=models.CASCADE)
     anime = models.ForeignKey('Anime', on_delete=models.CASCADE)
-    text = models.TextField()
+    text = models.TextField(validators=[MaxLengthValidator(250)])
     created_at = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
     def __str__(self):
         return f"{self.user.user.username} - {self.anime.title} - {self.created_at}"
+
+
+class Review(models.Model):
+    anime = models.ForeignKey('Anime', on_delete=models.CASCADE)
+    storyline = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    characters = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    artwork = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    sound_series = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    final_grade = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    text = models.TextField(validators=[MinLengthValidator(150), MaxLengthValidator(10000)])
+    date = models.DateField(auto_now_add=True)
+    user = models.ForeignKey('Profile', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'anime')
+
+    def __str__(self):
+        return f"{self.user.user.username} - {self.anime.title} - {self.final_grade}"
