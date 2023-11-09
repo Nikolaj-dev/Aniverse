@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Anime, Genre, Studio, Profile, Rating, Collection, Comment
 from django.contrib.auth.models import User
+import datetime
 
 
 class ShortAnimeSerializer(serializers.ModelSerializer):
@@ -98,7 +99,7 @@ class CollectionSerializer(serializers.ModelSerializer):
         return collection
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentReadOnlySerializer(serializers.ModelSerializer):
     anime_reply = serializers.CharField(source='parent.anime.title', read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
     user = serializers.CharField(source='user.nickname', read_only=True)
@@ -110,3 +111,19 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('anime_reply', 'created_at', 'anime', 'text', 'parent', 'user', 'id', 'reply_to')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('text', 'anime', 'parent')
+
+    def create(self, validated_data):
+        comment_data = {
+            'user': Profile.objects.get(user=self.context['request'].user),
+            'anime': validated_data.get('anime'),
+            'text': validated_data.get('text'),
+            'parent': validated_data.get('parent')
+        }
+        comment = Comment.objects.create(**comment_data)
+        return comment

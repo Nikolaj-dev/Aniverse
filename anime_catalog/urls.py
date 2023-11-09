@@ -27,7 +27,11 @@ urlpatterns = [
     path('collection-create/', views.CollectionCreateAPIView.as_view()),
     path('collection-update/<int:pk>/', views.CollectionUpdateAPIView.as_view()),
     path('collection-delete/<int:pk>/', views.CollectionDeleteAPIView.as_view()),
-    path('comments/', views.CommentsListAPIView.as_view()),
+    path('comment-list/', views.CommentListAPIView.as_view()),
+    path('comment-retrieve/<int:pk>/', views.CommentRetrieveAPIView.as_view()),
+    path('comment-create/', views.CommentCreateAPIView.as_view()),
+    path('comment-update/<int:pk>/', views.CommentUpdateAPIView.as_view()),
+    path('comment-delete/<int:pk>/', views.CommentDeleteAPIView.as_view()),
     path('data-from-drf/', views.data_from_drf, name='data_from_drf'),
     path('register/', views.UserRegistrationView.as_view(), name='user-registration'),
 ]

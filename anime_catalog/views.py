@@ -9,11 +9,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Anime, Genre, Studio, Rating, Profile, Collection, Comment
 from . import serializers
 from rest_framework import permissions, status
-from .permissons import IsModerator, IsRatingOwner, IsCollectionOwner
+from .permissons import IsModerator, IsRatingOwner, IsCollectionOwner, IsCommentOwner
 import requests
 
 from .serializers import AnimeAverageRatingSerializer, UserRegistrationSerializer, RatingSerializer, \
-    CollectionSerializer, CommentSerializer
+    CollectionSerializer, CommentSerializer, CommentReadOnlySerializer
 
 
 class ShortAnimeListAPIView(ListAPIView):
@@ -236,8 +236,9 @@ class CollectionDeleteAPIView(RetrieveDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsCollectionOwner]
 
 
-class CommentsListAPIView(ListAPIView):
-    serializer_class = CommentSerializer
+class CommentListAPIView(ListAPIView):
+    serializer_class = CommentReadOnlySerializer
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         queryset = Comment.objects.all()
@@ -247,6 +248,30 @@ class CommentsListAPIView(ListAPIView):
             queryset = queryset.filter(anime__title=anime)
 
         return queryset
+
+
+class CommentCreateAPIView(CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CommentUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated, IsCommentOwner]
+
+
+class CommentDeleteAPIView(RetrieveDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated, IsCommentOwner]
+
+
+class CommentRetrieveAPIView(RetrieveAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentReadOnlySerializer
+    permission_classes = [permissions.AllowAny]
 
 
 def data_from_drf(request):
