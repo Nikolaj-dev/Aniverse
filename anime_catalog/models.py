@@ -60,6 +60,12 @@ class Profile(models.Model):
     def __str__(self):
         return self.nickname
 
+    def save(self, *args, **kwargs):
+        if not self.image:
+            self.image = 'profile_images/empty.jpg'
+
+        super(Profile, self).save(*args, **kwargs)
+
 
 class Rating(models.Model):
     for_anime = models.OneToOneField('Anime', on_delete=models.CASCADE)

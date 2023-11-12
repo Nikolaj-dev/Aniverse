@@ -42,17 +42,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(required=False)
     sex = serializers.ChoiceField(choices=Profile.SEX_CHOICES, required=False)
     birth_date = serializers.DateField(required=False)
+    nickname = serializers.CharField()  # Add this line to include nickname in the registration data
 
     class Meta:
         model = User
         fields = ('username', 'password', 'nickname', 'email', 'image', 'bio', 'sex', 'birth_date')
 
     def create(self, validated_data):
+        # Separate User creation
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
             email=validated_data['email'],
         )
+
+        # Create Profile associated with the user
         profile_data = {
             'user': user,
             'nickname': validated_data.get('nickname'),
@@ -62,6 +66,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             'birth_date': validated_data.get('birth_date'),
         }
         Profile.objects.create(**profile_data)
+
         return user
 
 
@@ -76,7 +81,6 @@ class RatingSerializer(serializers.ModelSerializer):
         user = Profile.objects.get(user=self.context['request'].user)
         rating = Rating.objects.create(for_user=user, **validated_data)
         return rating
-
 
 
 class CollectionSerializer(serializers.ModelSerializer):

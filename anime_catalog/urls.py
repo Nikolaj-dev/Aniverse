@@ -23,7 +23,7 @@ urlpatterns = [
     path('rating-create/', views.RatingCreateAPIView.as_view()),
     path('rating-update/<int:pk>/', views.RatingUpdateAPIView.as_view()),
     path('rating-delete/<int:pk>/', views.RatingDeleteAPIView.as_view()),
-    path('collections/', views.CollectionListAPIView.as_view()),
+    path('collection-list/', views.CollectionListAPIView.as_view()),
     path('collection-create/', views.CollectionCreateAPIView.as_view()),
     path('collection-update/<int:pk>/', views.CollectionUpdateAPIView.as_view()),
     path('collection-delete/<int:pk>/', views.CollectionDeleteAPIView.as_view()),
@@ -37,7 +37,6 @@ urlpatterns = [
     path('review-create/', views.ReviewCreateAPIView.as_view()),
     path('review-update/<int:pk>/', views.ReviewUpdateAPIView.as_view()),
     path('review-delete/<int:pk>/', views.ReviewDeleteAPIView.as_view()),
-    path('data-from-drf/', views.data_from_drf, name='data_from_drf'),
-    path('register/', views.UserRegistrationView.as_view(), name='user-registration'),
+    path('register/', views.UserRegistrationView.as_view()),
 ]
 

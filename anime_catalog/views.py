@@ -1,5 +1,4 @@
 from django.db.models import Avg, Count
-from django.shortcuts import render
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView, \
     RetrieveAPIView, get_object_or_404
 from rest_framework.views import APIView
@@ -9,7 +8,6 @@ from .models import Anime, Genre, Studio, Rating, Profile, Collection, Comment, 
 from . import serializers
 from rest_framework import permissions, status
 from .permissons import IsModerator, IsRatingOwner, IsCollectionOwner, IsCommentOwner, IsReviewOwner
-import requests
 from .serializers import AnimeAverageRatingSerializer, UserRegistrationSerializer, RatingSerializer, \
     CollectionSerializer, CommentSerializer, CommentReadOnlySerializer, ReviewReadOnlySerializer, ReviewSerializer
 
@@ -295,11 +293,3 @@ class ReviewDeleteAPIView(RetrieveDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated, IsReviewOwner]
-
-
-def data_from_drf(request):
-    response = requests.get('http://127.0.0.1:8000/catalog_api/comments/?anime=Kusuriya%20no%20Hitorigoto')
-    if response.status_code == 200:
-        data = response.json()
-        context = {'data': data}
-        return render(request, 'home.html', context)
