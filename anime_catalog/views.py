@@ -13,7 +13,7 @@ from .serializers import AnimeAverageRatingSerializer, UserRegistrationSerialize
 
 
 class ShortAnimeListAPIView(ListAPIView):
-    queryset = Anime.objects.all()
+    queryset = Anime.objects.all().order_by('-id')
     serializer_class = serializers.ShortAnimeSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -23,7 +23,7 @@ class FullAnimeListAPIView(ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        queryset = Anime.objects.all()
+        queryset = Anime.objects.all().order_by('-id')
         studio = self.request.query_params.get('studio')
         genres = self.request.query_params.getlist('genres')
         status = self.request.query_params.get('status')
@@ -48,79 +48,79 @@ class FullAnimeListAPIView(ListAPIView):
 
 
 class AnimeRetrieveAPIView(RetrieveAPIView):
-    queryset = Anime.objects.all()
+    queryset = Anime.objects.all().order_by('-id')
     serializer_class = serializers.FullAnimeSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class AnimeCreateAPIView(CreateAPIView):
-    queryset = Anime.objects.all()
+    queryset = Anime.objects.all().order_by('-id')
     serializer_class = serializers.FullAnimeSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class AnimeUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Anime.objects.all()
+    queryset = Anime.objects.all().order_by('-id')
     serializer_class = serializers.FullAnimeSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class AnimeDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Anime.objects.all()
+    queryset = Anime.objects.all().order_by('-id')
     serializer_class = serializers.FullAnimeSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class GenreListAPIView(ListAPIView):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by('-id')
     serializer_class = serializers.GenreSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class GenreRetrieveAPIView(RetrieveAPIView):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by('-id')
     serializer_class = serializers.GenreSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class GenreCreateAPIView(CreateAPIView):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by('-id')
     serializer_class = serializers.GenreSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class GenreUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by('-id')
     serializer_class = serializers.GenreSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class GenreDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().order_by('-id')
     serializer_class = serializers.GenreSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class StudioListAPIView(ListAPIView):
-    queryset = Studio.objects.all()
+    queryset = Studio.objects.all().order_by('-id')
     serializer_class = serializers.StudioSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class StudioCreateAPIView(CreateAPIView):
-    queryset = Studio.objects.all()
+    queryset = Studio.objects.all().order_by('-id')
     serializer_class = serializers.StudioSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class StudioUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Studio.objects.all()
+    queryset = Studio.objects.all().order_by('-id')
     serializer_class = serializers.StudioSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
 
 class StudioDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Studio.objects.all()
+    queryset = Studio.objects.all().order_by('-id')
     serializer_class = serializers.StudioSerializer
     permission_classes = [permissions.IsAuthenticated, (permissions.IsAdminUser | IsModerator)]
 
@@ -171,13 +171,13 @@ class UserRegistrationView(APIView):
 
 
 class RatingCreateAPIView(CreateAPIView):
-    queryset = Rating.objects.all()
+    queryset = Rating.objects.all().order_by('-id')
     serializer_class = RatingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class RatingUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Rating.objects.all()
+    queryset = Rating.objects.all().order_by('-id')
     serializer_class = RatingSerializer
     permission_classes = [permissions.IsAuthenticated, IsRatingOwner]
 
@@ -187,7 +187,7 @@ class RatingUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class RatingDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Rating.objects.all()
+    queryset = Rating.objects.all().order_by('-id')
     serializer_class = RatingSerializer
     permission_classes = [permissions.IsAuthenticated, IsRatingOwner]
 
@@ -202,19 +202,19 @@ class CollectionListAPIView(ListAPIView):
 
 
 class CollectionCreateAPIView(CreateAPIView):
-    queryset = Collection.objects.all()
+    queryset = Collection.objects.all().order_by('-id')
     serializer_class = CollectionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CollectionUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Collection.objects.all()
+    queryset = Collection.objects.all().order_by('-id')
     serializer_class = CollectionSerializer
     permission_classes = [permissions.IsAuthenticated, IsCollectionOwner]
 
 
 class CollectionDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Collection.objects.all()
+    queryset = Collection.objects.all().order_by('-id')
     serializer_class = CollectionSerializer
     permission_classes = [permissions.IsAuthenticated, IsCollectionOwner]
 
@@ -224,7 +224,7 @@ class CommentListAPIView(ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        queryset = Comment.objects.all()
+        queryset = Comment.objects.all().order_by('-id')
         anime = self.request.query_params.get('anime')
 
         if anime:
@@ -234,31 +234,31 @@ class CommentListAPIView(ListAPIView):
 
 
 class CommentCreateAPIView(CreateAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('-id')
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CommentUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('-id')
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsCommentOwner]
 
 
 class CommentDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('-id')
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated, IsCommentOwner]
 
 
 class CommentRetrieveAPIView(RetrieveAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('-id')
     serializer_class = CommentReadOnlySerializer
     permission_classes = [permissions.AllowAny]
 
 
 class ReviewRetrieveAPIView(RetrieveAPIView):
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().order_by('-id')
     serializer_class = ReviewReadOnlySerializer
     permission_classes = [permissions.AllowAny]
 
@@ -268,7 +268,7 @@ class ReviewListAPIView(ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        queryset = Review.objects.all()
+        queryset = Review.objects.all().order_by('-id')
         anime = self.request.query_params.get('anime')
 
         if anime:
@@ -278,18 +278,18 @@ class ReviewListAPIView(ListAPIView):
 
 
 class ReviewCreateAPIView(CreateAPIView):
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().order_by('-id')
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class ReviewUpdateAPIView(RetrieveUpdateAPIView):
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().order_by('-id')
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated, IsReviewOwner]
 
 
 class ReviewDeleteAPIView(RetrieveDestroyAPIView):
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().order_by('-id')
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated, IsReviewOwner]

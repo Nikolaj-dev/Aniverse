@@ -120,41 +120,58 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": config('ACCESS_TOKEN_LIFETIME', default=31, cast=int),
-    "REFRESH_TOKEN_LIFETIME": config('REFRESH_TOKEN_LIFETIME', default=31, cast=int),
-    "ROTATE_REFRESH_TOKENS": config('ROTATE_REFRESH_TOKENS', default=True, cast=bool),
-    "BLACKLIST_AFTER_ROTATION": config('BLACKLIST_AFTER_ROTATION', default=False, cast=bool),
-    "UPDATE_LAST_LOGIN": config('UPDATE_LAST_LOGIN', default=False, cast=bool),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=31),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=31),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
 
-    "ALGORITHM": config('ALGORITHM', default="HS256"),
-    "SIGNING_KEY": config('SIGNING_KEY', default=SECRET_KEY),
-    "VERIFYING_KEY": config('VERIFYING_KEY', default=""),
-    "AUDIENCE": config('AUDIENCE', default=None),
-    "ISSUER": config('ISSUER', default=None),
-    "JSON_ENCODER": config('JSON_ENCODER', default=None),
-    "JWK_URL": config('JWK_URL', default=None),
-    "LEEWAY": config('LEEWAY', default=0, cast=int),
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": settings.SECRET_KEY,
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
 
-    "AUTH_HEADER_TYPES": config('AUTH_HEADER_TYPES', default=("Bearer",), cast=lambda v: tuple(v.split(','))),
-    "AUTH_HEADER_NAME": config('AUTH_HEADER_NAME', default="HTTP_AUTHORIZATION"),
-    "USER_ID_FIELD": config('USER_ID_FIELD', default="id"),
-    "USER_ID_CLAIM": config('USER_ID_CLAIM', default="user_id"),
-    "USER_AUTHENTICATION_RULE": config('USER_AUTHENTICATION_RULE', default="rest_framework_simplejwt.authentication.default_user_authentication_rule"),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
 
-    "AUTH_TOKEN_CLASSES": config('AUTH_TOKEN_CLASSES', default=("rest_framework_simplejwt.tokens.AccessToken",), cast=lambda v: tuple(v.split(','))),
-    "TOKEN_TYPE_CLAIM": config('TOKEN_TYPE_CLAIM', default="token_type"),
-    "TOKEN_USER_CLASS": config('TOKEN_USER_CLASS', default="rest_framework_simplejwt.models.TokenUser"),
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
 
-    "JTI_CLAIM": config('JTI_CLAIM', default="jti"),
+    "JTI_CLAIM": "jti",
 
-    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": config('SLIDING_TOKEN_REFRESH_EXP_CLAIM', default="refresh_exp"),
-    "SLIDING_TOKEN_LIFETIME": config('SLIDING_TOKEN_LIFETIME', default=31, cast=int),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": config('SLIDING_TOKEN_REFRESH_LIFETIME', default=31, cast=int),
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(days=31),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=31),
 
-    "TOKEN_OBTAIN_SERIALIZER": config('TOKEN_OBTAIN_SERIALIZER', default="rest_framework_simplejwt.serializers.TokenObtainPairSerializer"),
-    "TOKEN_REFRESH_SERIALIZER": config('TOKEN_REFRESH_SERIALIZER', default="rest_framework_simplejwt.serializers.TokenRefreshSerializer"),
-    "TOKEN_VERIFY_SERIALIZER": config('TOKEN_VERIFY_SERIALIZER', default="rest_framework_simplejwt.serializers.TokenVerifySerializer"),
-    "TOKEN_BLACKLIST_SERIALIZER": config('TOKEN_BLACKLIST_SERIALIZER', default="rest_framework_simplejwt.serializers.TokenBlacklistSerializer"),
-    "SLIDING_TOKEN_OBTAIN_SERIALIZER": config('SLIDING_TOKEN_OBTAIN_SERIALIZER', default="rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer"),
-    "SLIDING_TOKEN_REFRESH_SERIALIZER": config('SLIDING_TOKEN_REFRESH_SERIALIZER', default="rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer"),
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TIMEZONE = 'Asia/Almaty'
+
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT')
