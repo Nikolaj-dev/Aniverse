@@ -1,5 +1,5 @@
 # Aniverse
- Aniverse is a fun online resource for anime fans where you can find extensive information about a variety of anime series, rate and discuss them, create your own "read" and "favorite" lists, and support the project through donations.
+ Aniverse is a fun online resource for anime fans where you can find extensive information about a variety of anime series, rate and discuss them, create your own "read" and "favorite" lists.
 ## Requirements
 
 Make sure you have Python installed (Python 3.x is recommended) along with pip. To install project dependencies, run:
