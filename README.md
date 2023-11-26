@@ -10,7 +10,7 @@ pip install -r requirements.txt
 git clone https://github.com/Nikolaj-dev/Aniverse.git
 
 cd Aniverse
-Fill up the .env file as it's described in env_instance
+Fill up the .env file as it is described in env_instance
 
 python -m venv venv
 
