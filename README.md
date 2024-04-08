@@ -9,7 +9,6 @@ Django Rest Framework, Celery, PostgreSQL, Redis, JWT, Swagger.
 Make sure you have Python installed (Python 3.x is recommended) along with pip. To install project dependencies, run:
 
 ```bash
-pip install -r requirements.txt
 
 git clone https://github.com/Nikolaj-dev/Aniverse.git
 
